@@ -6,7 +6,7 @@ import { PhaserGame } from "@/game/PhaserGame"
  */
 export function GameContainer() {
   return (
-    <div className="relative w-full aspect-[4/3] max-w-[1024px] mx-auto rounded-lg overflow-hidden border-2 border-border shadow-2xl">
+    <div className="relative w-full aspect-[4/3] max-w-[1024px] mx-auto rounded-lg overflow-hidden border-2 border-border shadow-2xl" style={{ imageRendering: 'pixelated' }}>
       <PhaserGame />
     </div>
   )

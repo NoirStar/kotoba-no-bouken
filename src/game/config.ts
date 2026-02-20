@@ -6,12 +6,13 @@ import { UIScene } from "./scenes/UIScene"
 /** Phaser 게임 설정 */
 export function createGameConfig(parent: string): Phaser.Types.Core.GameConfig {
   return {
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,   // Canvas2D = CSS image-rendering 적용 → 선명한 픽셀아트
     parent,
     width: 512,   // 16 tiles × 32px
     height: 384,  // 12 tiles × 32px
     pixelArt: true,
     roundPixels: true,
+    antialias: false,
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
