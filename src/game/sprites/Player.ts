@@ -28,10 +28,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     body.setSize(20, 24)
     body.setOffset(6, 20)
 
-    // 이름 표시
+    // 이름 표시 (일본어 → DotGothic16)
     this.nameText = scene.add
       .text(x, y - 32, "あなた", {
-        fontSize: "7px",
+        fontSize: "8px",
         color: "#60a5fa",
         fontFamily: "DotGothic16, monospace",
         stroke: "#000000",

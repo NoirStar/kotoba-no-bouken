@@ -204,6 +204,8 @@ export class ConbiniScene extends Phaser.Scene {
         fontSize: "10px",
         color: "#ffffff",
         fontFamily: "DotGothic16, monospace",
+        stroke: "#000000",
+        strokeThickness: 2,
       })
       .setOrigin(0.5)
       .setDepth(5)
@@ -220,11 +222,13 @@ export class ConbiniScene extends Phaser.Scene {
   private addShelfLabel(x: number, y: number, text: string): void {
     this.add
       .text(x, y, text, {
-        fontSize: "7px",
+        fontSize: "8px",
         color: "#fff8e7",
         fontFamily: "DotGothic16, monospace",
         backgroundColor: "rgba(0,0,0,0.5)",
         padding: { x: 2, y: 1 },
+        stroke: "#000000",
+        strokeThickness: 1,
       })
       .setOrigin(0.5)
       .setDepth(5)

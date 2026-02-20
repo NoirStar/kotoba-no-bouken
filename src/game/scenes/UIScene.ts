@@ -25,15 +25,16 @@ export class UIScene extends Phaser.Scene {
 
   /** 조작법 힌트 (화면 좌하단) */
   private createControlHints(): void {
+    // 한국어 설명 → Noto Sans KR, 키 이름 → DotGothic16
     const hintStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontSize: "7px",
+      fontSize: "8px",
       color: "#ffffff",
-      fontFamily: "DotGothic16, monospace",
+      fontFamily: "'Noto Sans KR', sans-serif",
       stroke: "#000000",
       strokeThickness: 2,
     }
     const keyStyle: Phaser.Types.GameObjects.Text.TextStyle = {
-      fontSize: "7px",
+      fontSize: "8px",
       color: "#fbbf24",
       fontFamily: "DotGothic16, monospace",
       stroke: "#000000",
@@ -49,20 +50,20 @@ export class UIScene extends Phaser.Scene {
     const elements: Phaser.GameObjects.GameObject[] = []
     // 반투명 배경
     const bg = this.add
-      .rectangle(0, 0, 110, hints.length * 14 + 8, 0x000000, 0.5)
+      .rectangle(0, 0, 120, hints.length * 16 + 8, 0x000000, 0.5)
       .setOrigin(0, 0)
     bg.setStrokeStyle(1, 0x333333, 0.5)
     elements.push(bg)
 
     hints.forEach((h, i) => {
-      const y = 4 + i * 14
+      const y = 4 + i * 16
       elements.push(
         this.add.text(6, y, h.key, keyStyle),
-        this.add.text(74, y, h.desc, hintStyle),
+        this.add.text(82, y, h.desc, hintStyle),
       )
     })
 
-    this.controlsContainer = this.add.container(6, 384 - hints.length * 14 - 16, elements)
+    this.controlsContainer = this.add.container(6, 384 - hints.length * 16 - 16, elements)
     this.controlsContainer.setDepth(100)
     this.controlsContainer.setAlpha(0.8)
   }
@@ -71,33 +72,33 @@ export class UIScene extends Phaser.Scene {
   private createSubtitleSystem(): void {
     // 자막 배경
     this.subtitleBg = this.add
-      .rectangle(256, 360, 480, 36, 0x000000, 0.75)
+      .rectangle(256, 362, 480, 36, 0x000000, 0.75)
       .setDepth(99)
       .setVisible(false)
 
     this.subtitleBg.setStrokeStyle(1, 0x555555, 0.5)
 
-    // 화자 이름
+    // 화자 이름 (일본어 → DotGothic16)
     this.subtitleSpeaker = this.add
-      .text(30, 348, "", {
-        fontSize: "7px",
+      .text(30, 350, "", {
+        fontSize: "8px",
         color: "#fbbf24",
         fontFamily: "DotGothic16, monospace",
         stroke: "#000000",
-        strokeThickness: 1,
+        strokeThickness: 2,
       })
       .setDepth(100)
       .setVisible(false)
 
-    // 자막 텍스트
+    // 자막 텍스트 (일본어 → DotGothic16)
     this.subtitleText = this.add
-      .text(30, 358, "", {
+      .text(30, 360, "", {
         fontSize: "9px",
         color: "#ffffff",
         fontFamily: "DotGothic16, monospace",
         wordWrap: { width: 460, useAdvancedWrap: true },
         stroke: "#000000",
-        strokeThickness: 1,
+        strokeThickness: 2,
       })
       .setDepth(100)
       .setVisible(false)
@@ -158,21 +159,21 @@ export class UIScene extends Phaser.Scene {
     refuseService: boolean,
   ): void {
     // 배경
-    const bgWidth = refuseService ? 300 : 240
+    const bgWidth = refuseService ? 280 : 220
     const bg = this.add
-      .rectangle(256, 50, bgWidth, refuseService ? 48 : 36, 0x000000, 0.85)
+      .rectangle(256, 50, bgWidth, refuseService ? 44 : 32, 0x000000, 0.85)
       .setDepth(110)
       .setStrokeStyle(2, Phaser.Display.Color.HexStringToColor(color).color, 1)
 
-    // 기분 텍스트
+    // 기분 텍스트 (NPC이름=일본어, 기분=한국어 → Noto Sans KR)
     const line1 = `${npcName} ${moodText}`
     const text1 = this.add
-      .text(256, refuseService ? 42 : 50, line1, {
+      .text(256, refuseService ? 40 : 50, line1, {
         fontSize: "9px",
         color,
-        fontFamily: "DotGothic16, monospace",
+        fontFamily: "'Noto Sans KR', sans-serif",
         stroke: "#000000",
-        strokeThickness: 1,
+        strokeThickness: 2,
       })
       .setOrigin(0.5)
       .setDepth(111)
@@ -183,11 +184,11 @@ export class UIScene extends Phaser.Scene {
     if (refuseService) {
       const warn = this.add
         .text(256, 56, `⚠ ${reason}`, {
-          fontSize: "7px",
+          fontSize: "8px",
           color: "#ff6b6b",
-          fontFamily: "sans-serif",
+          fontFamily: "'Noto Sans KR', sans-serif",
           stroke: "#000000",
-          strokeThickness: 1,
+          strokeThickness: 2,
         })
         .setOrigin(0.5)
         .setDepth(111)

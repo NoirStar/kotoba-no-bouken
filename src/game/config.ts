@@ -10,6 +10,7 @@ export function createGameConfig(parent: string): Phaser.Types.Core.GameConfig {
     parent,
     width: 512,   // 16 tiles × 32px
     height: 384,  // 12 tiles × 32px
+    zoom: 2,      // 캔버스 1024×768 → CSS 확대 없이 선명
     pixelArt: true,
     roundPixels: true,
     antialias: false,

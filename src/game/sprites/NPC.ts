@@ -28,10 +28,10 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     body.setSize(20, 24)
     body.setOffset(6, 20)
 
-    // 이름표
+    // 이름표 (일본어 → DotGothic16)
     this._nameTag = scene.add
       .text(x, y - 32, def.name, {
-        fontSize: "7px",
+        fontSize: "8px",
         color: "#4ade80",
         fontFamily: "DotGothic16, monospace",
         stroke: "#000000",
@@ -40,14 +40,14 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
       .setOrigin(0.5)
       .setDepth(15)
 
-    // 역할 표시
+    // 역할 표시 (한국어 → Noto Sans KR)
     scene.add
       .text(x, y - 24, def.role.split(" ")[0], {
-        fontSize: "6px",
+        fontSize: "7px",
         color: "#8892b0",
-        fontFamily: "DotGothic16, monospace",
+        fontFamily: "'Noto Sans KR', sans-serif",
         stroke: "#000000",
-        strokeThickness: 1,
+        strokeThickness: 2,
       })
       .setOrigin(0.5)
       .setDepth(15)
@@ -108,7 +108,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     if (this.interactHint) return
     this.interactHint = this.scene.add
       .text(this.x, this.y + 28, "[ Z ]", {
-        fontSize: "7px",
+        fontSize: "8px",
         color: "#fbbf24",
         fontFamily: "DotGothic16, monospace",
         backgroundColor: "rgba(0,0,0,0.6)",
