@@ -53,7 +53,7 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
       .setDepth(15)
   }
 
-  /** 머리 위 아이콘 표시 (🎤/💬/❗/✅) */
+  /** 머리 위 아이콘 표시 (mic/speech/quest/check/mood) */
   showIcon(type: CharacterIcon): void {
     this.hideIcon()
     const iconKey =
@@ -65,7 +65,15 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
             ? "icon-quest"
             : type === "quest-complete"
               ? "icon-check"
-              : null
+              : type === "mood-happy"
+                ? "icon-mood-happy"
+                : type === "mood-angry"
+                  ? "icon-mood-angry"
+                  : type === "mood-annoyed"
+                    ? "icon-mood-annoyed"
+                    : type === "mood-sad"
+                      ? "icon-mood-sad"
+                      : null
 
     if (iconKey) {
       this.statusIcon = this.scene.add
@@ -95,11 +103,11 @@ export class NPC extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  /** 대화 가능 힌트 표시 ('E' 또는 'Space') */
+  /** 대화 가능 힌트 표시 ('Z'키) */
   showInteractHint(): void {
     if (this.interactHint) return
     this.interactHint = this.scene.add
-      .text(this.x, this.y + 28, "[ SPACE ]", {
+      .text(this.x, this.y + 28, "[ Z ]", {
         fontSize: "7px",
         color: "#fbbf24",
         fontFamily: "DotGothic16, monospace",

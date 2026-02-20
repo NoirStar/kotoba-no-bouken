@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { useDialogStore } from "@/stores/dialogStore"
-import { X, BookOpen, ArrowRight } from "lucide-react"
+import { X, BookOpen, ArrowRight, CheckCircle2, Lightbulb } from "lucide-react"
 
 /**
  * GrammarFeedback - 문법 피드백 표시
@@ -32,7 +32,7 @@ export function GrammarFeedback() {
                 : "bg-pixel-yellow/20 text-pixel-yellow",
             )}
           >
-            {lastFeedback.isNatural ? "✅ 자연스러워요!" : "💡 이렇게 해보세요"}
+            <span className="inline-flex items-center gap-1">{lastFeedback.isNatural ? <><CheckCircle2 size={12} /> 자연스러워요!</> : <><Lightbulb size={12} /> 이렇게 해보세요</>}</span>
           </span>
         </div>
 

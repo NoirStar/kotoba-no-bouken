@@ -1,21 +1,16 @@
 import { cn } from "@/lib/utils"
 import { useGameStore } from "@/stores/gameStore"
 import { allRooms } from "@/data/rooms/conbini"
-import { useQuestStore } from "@/stores/questStore"
-import { Lock, Check, Play } from "lucide-react"
+import { Lock, Check, Play, Users, ClipboardList, Store, UtensilsCrossed, School, Hospital, Hotel, TrainFront } from "lucide-react"
 
 /**
  * RoomSelect - 방 선택 화면
  */
 export function RoomSelect() {
-  const { enterRoom, clearedRooms } = useGameStore()
-  const { initRoom } = useQuestStore()
+  const { selectRoom, clearedRooms } = useGameStore()
 
   const handleEnterRoom = (roomId: string) => {
-    const room = allRooms.find((r) => r.id === roomId)
-    if (!room) return
-    initRoom(room.quests.map((q) => q.id))
-    enterRoom(roomId)
+    selectRoom(roomId)
   }
 
   return (
@@ -53,17 +48,17 @@ export function RoomSelect() {
                 ) : null}
               </div>
 
-              <div className="text-4xl mb-3">{room.icon}</div>
+              <div className="text-primary mb-3"><Store size={40} strokeWidth={1.5} /></div>
               <h3 className="font-pixel text-lg">{room.name}</h3>
               <p className="text-sm text-muted-foreground">{room.nameKo}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 {room.description}
               </p>
 
-              <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <span>👤 NPC {room.npcs.length}명</span>
+              <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1"><Users size={12} /> NPC {room.npcs.length}명</span>
                 <span>•</span>
-                <span>📋 퀘스트 {room.quests.length}개</span>
+                <span className="inline-flex items-center gap-1"><ClipboardList size={12} /> 퀘스트 {room.quests.length}개</span>
               </div>
 
               {isAvailable && !isCleared && (
@@ -76,20 +71,27 @@ export function RoomSelect() {
         })}
 
         {/* 미래 Room 플레이스홀더 */}
-        {["🍜 レストラン", "🏫 学校", "🏥 病院", "🏨 ホテル", "🚉 駅"].map(
-          (name) => (
+        {[
+          { name: "レストラン", icon: UtensilsCrossed },
+          { name: "学校", icon: School },
+          { name: "病院", icon: Hospital },
+          { name: "ホテル", icon: Hotel },
+          { name: "駅", icon: TrainFront },
+        ].map((room) => {
+          const Icon = room.icon
+          return (
             <div
-              key={name}
+              key={room.name}
               className="p-6 rounded-xl border-2 border-dashed border-border/30 text-center opacity-40"
             >
-              <div className="text-4xl mb-3">{name.split(" ")[0]}</div>
+              <div className="flex justify-center text-muted-foreground mb-3"><Icon size={40} strokeWidth={1.5} /></div>
               <h3 className="font-pixel text-lg text-muted-foreground">
-                {name.split(" ")[1]}
+                {room.name}
               </h3>
               <p className="text-xs text-muted-foreground mt-2">Coming Soon</p>
             </div>
-          ),
-        )}
+          )
+        })}
       </div>
     </div>
   )

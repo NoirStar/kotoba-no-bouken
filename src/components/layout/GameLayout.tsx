@@ -9,7 +9,7 @@ import { useGameStore } from "@/stores/gameStore"
 import { useQuestStore } from "@/stores/questStore"
 import { eventBridge } from "@/game/EventBridge"
 import { conbiniRoom } from "@/data/rooms/conbini"
-import { ArrowLeft, Settings } from "lucide-react"
+import { ArrowLeft, Settings, Store } from "lucide-react"
 
 /**
  * GameLayout - 게임 플레이 중 전체 레이아웃
@@ -32,8 +32,8 @@ export function GameLayout() {
   const { startConversation, endConversation, activeNpcId } = useDialogStore()
   const { isRoomCleared } = useQuestStore()
 
-  // 이벤트 브릿지: NPC 근접/이탈 시 대화 상태 관리
-  const handleNearNpc = useCallback(
+  // 이벤트 브릿지: Z키로 대화 시작, 이탈 시 종료
+  const handleStartConversation = useCallback(
     (npcId: unknown) => {
       if (typeof npcId === "string" && !activeNpcId) {
         startConversation(npcId)
@@ -44,40 +44,59 @@ export function GameLayout() {
 
   const handleLeftNpc = useCallback(() => {
     endConversation()
+    eventBridge.emit("conversation-ended")
   }, [endConversation])
 
   useEffect(() => {
-    eventBridge.on("player-near-npc", handleNearNpc)
+    eventBridge.on("start-conversation", handleStartConversation)
     eventBridge.on("player-left-npc", handleLeftNpc)
 
     return () => {
-      eventBridge.off("player-near-npc", handleNearNpc)
+      eventBridge.off("start-conversation", handleStartConversation)
       eventBridge.off("player-left-npc", handleLeftNpc)
     }
-  }, [handleNearNpc, handleLeftNpc])
+  }, [handleStartConversation, handleLeftNpc])
 
-  // 전체 퀘스트 클리어 체크
-  const allQuestIds = conbiniRoom.quests.map((q) => q.id)
+  // 현재 난이도의 퀘스트 클리어 체크
+  const { currentDifficulty } = useGameStore()
+  const difficultyQuestIds = conbiniRoom.quests
+    .filter((q) => q.difficulty === currentDifficulty)
+    .map((q) => q.id)
+
   useEffect(() => {
-    if (isRoomCleared(allQuestIds)) {
-      const { clearRoom } = useGameStore.getState()
-      clearRoom(conbiniRoom.id)
+    if (difficultyQuestIds.length > 0 && isRoomCleared(difficultyQuestIds)) {
+      const { clearDifficulty, currentRoomId: roomId, currentDifficulty: diff } = useGameStore.getState()
+      if (roomId && diff) {
+        clearDifficulty(roomId, diff)
+      }
+      // 전체 난이도 클리어 체크
+      const allCleared = ["easy", "normal", "hard", "hell"].every(
+        (d) => useGameStore.getState().isDifficultyCleared(roomId!, d as import("@/types/room").QuestDifficulty),
+      )
+      if (allCleared) {
+        const { clearRoom } = useGameStore.getState()
+        clearRoom(conbiniRoom.id)
+      } else {
+        // 난이도 선택 화면으로 돌아가기
+        const { setState } = useGameStore.getState()
+        setState("difficulty-select")
+      }
     }
-  }, [isRoomCleared, allQuestIds])
+  }, [isRoomCleared, difficultyQuestIds])
 
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* 헤더 */}
       <header className="flex items-center justify-between px-4 py-2 border-b border-border bg-card/50">
         <button
-          onClick={() => setState("room-select")}
+          onClick={() => setState("difficulty-select")}
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft size={16} />
-          <span>방 선택</span>
+          <span>난이도 선택</span>
         </button>
-        <h1 className="font-pixel text-sm">
-          🏪 コンビニ
+        <h1 className="font-pixel text-sm flex items-center gap-1.5">
+          <Store size={14} className="text-primary" /> コンビニ
         </h1>
         <button className="text-muted-foreground hover:text-foreground">
           <Settings size={16} />

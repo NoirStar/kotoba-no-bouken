@@ -2,6 +2,7 @@ import { useGameStore } from "@/stores/gameStore"
 import { useQuestStore } from "@/stores/questStore"
 import { conbiniRoom } from "@/data/rooms/conbini"
 import { motion } from "framer-motion"
+import { PartyPopper, Trophy, Store } from "lucide-react"
 
 /**
  * RoomClear - 방 클리어 연출 화면
@@ -26,7 +27,7 @@ export function RoomClear() {
         transition={{ duration: 0.6, type: "spring" }}
         className="text-8xl mb-6"
       >
-        🎉
+        <PartyPopper size={80} strokeWidth={1.5} className="text-pixel-yellow" />
       </motion.div>
 
       <motion.h1
@@ -44,8 +45,8 @@ export function RoomClear() {
         transition={{ delay: 0.5 }}
         className="text-center"
       >
-        <p className="text-lg mb-1">
-          {room?.icon} {room?.name} 클리어!
+        <p className="text-lg mb-1 flex items-center justify-center gap-2">
+          <Store size={20} className="text-primary" /> {room?.name} 클리어!
         </p>
         <p className="text-muted-foreground text-sm mb-6">
           퀘스트 {getCompletedCount()}/{room?.quests.length ?? 0} 완료
@@ -53,8 +54,8 @@ export function RoomClear() {
 
         {isAllCleared ? (
           <div className="space-y-4">
-            <p className="font-pixel text-pixel-yellow text-lg">
-              🏆 おめでとうございます！ 전체 클리어!
+            <p className="font-pixel text-pixel-yellow text-lg flex items-center justify-center gap-2">
+              <Trophy size={20} /> おめでとうございます！ 전체 클리어!
             </p>
             <button
               onClick={() => setState("title")}

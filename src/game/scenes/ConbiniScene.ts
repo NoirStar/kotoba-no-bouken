@@ -13,6 +13,9 @@ export class ConbiniScene extends Phaser.Scene {
   private npcs: NPC[] = []
   private nearestNpc: NPC | null = null
   private walls!: Phaser.Physics.Arcade.StaticGroup
+  private keyZ!: Phaser.Input.Keyboard.Key
+  private keySpace!: Phaser.Input.Keyboard.Key
+  private isConversing = false
 
   constructor() {
     super({ key: "ConbiniScene" })
@@ -37,6 +40,30 @@ export class ConbiniScene extends Phaser.Scene {
     // 카메라
     this.cameras.main.setBounds(0, 0, 512, 384)
 
+    // Z키 (말걸기), Space키 (마이크 토글) 설정
+    if (this.input.keyboard) {
+      this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
+      this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+
+      this.keyZ.on("down", () => {
+        if (this.nearestNpc && !this.isConversing) {
+          this.isConversing = true
+          eventBridge.emit("start-conversation", this.nearestNpc.npcId)
+        }
+      })
+
+      this.keySpace.on("down", () => {
+        if (this.isConversing) {
+          eventBridge.emit("mic-toggle")
+        }
+      })
+    }
+
+    // 대화 종료 시 상태 리셋
+    eventBridge.on("conversation-ended", () => {
+      this.isConversing = false
+    })
+
     // React 이벤트 리스너
     eventBridge.on("recording-start", () => {
       this.player.showIcon("mic")
@@ -54,6 +81,30 @@ export class ConbiniScene extends Phaser.Scene {
     eventBridge.on("quest-complete", () => {
       // 퀘스트 완료 이펙트
       this.cameras.main.flash(300, 16, 185, 129, false)
+    })
+
+    // NPC 기분 변화 시 아이콘 표시
+    eventBridge.on("npc-mood-change", (data: unknown) => {
+      const d = data as { npcId: string; mood: string }
+      if (!d) return
+      const npc = this.npcs.find((n) => n.npcId === d.npcId)
+      if (!npc) return
+
+      const moodIconMap: Record<string, import("@/types/game").CharacterIcon> = {
+        happy: "mood-happy",
+        angry: "mood-angry",
+        annoyed: "mood-annoyed",
+        sad: "mood-sad",
+      }
+
+      const iconType = moodIconMap[d.mood]
+      if (iconType) {
+        npc.showIcon(iconType)
+        // 3초후 아이콘 숨기기
+        this.time.delayedCall(3000, () => {
+          npc.hideIcon()
+        })
+      }
     })
   }
 
@@ -83,12 +134,17 @@ export class ConbiniScene extends Phaser.Scene {
     }
 
     if (closest && closest !== this.nearestNpc) {
+      this.nearestNpc?.hideInteractHint()
       this.nearestNpc = closest
-      eventBridge.emit("player-near-npc", closest.npcId, closestDist)
-      closest.showInteractHint()
+      if (!this.isConversing) {
+        closest.showInteractHint()
+      }
     } else if (!closest && this.nearestNpc) {
-      eventBridge.emit("player-left-npc", this.nearestNpc.npcId)
       this.nearestNpc.hideInteractHint()
+      if (this.isConversing) {
+        eventBridge.emit("player-left-npc", this.nearestNpc.npcId)
+        this.isConversing = false
+      }
       this.nearestNpc = null
     }
   }
@@ -144,7 +200,7 @@ export class ConbiniScene extends Phaser.Scene {
 
     // 간판 텍스트
     this.add
-      .text(256, 20, "🏪 コンビニ", {
+      .text(256, 20, "コンビニ", {
         fontSize: "10px",
         color: "#ffffff",
         fontFamily: "DotGothic16, monospace",

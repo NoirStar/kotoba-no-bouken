@@ -1,4 +1,4 @@
-import type { NPCDef, QuestDef, NPCResponse, DialogMessage } from "@/types/room"
+import type { NPCDef, QuestDef, NPCResponse, DialogMessage, NPCMood } from "@/types/room"
 
 /**
  * AI NPC 대화 서비스
@@ -11,6 +11,10 @@ interface ChatRequest {
   roomName: string
   activeQuests: QuestDef[]
   conversationHistory: DialogMessage[]
+  /** 현재 NPC 기분 */
+  npcMood?: NPCMood
+  /** 서비스 거부 중인지 */
+  refuseService?: boolean
 }
 
 /**
@@ -27,6 +31,8 @@ export async function sendToNPC(req: ChatRequest): Promise<NPCResponse> {
       npcRole: req.npc.role,
       npcPersonality: req.npc.personality,
       roomName: req.roomName,
+      npcMood: req.npcMood ?? "neutral",
+      refuseService: req.refuseService ?? false,
       activeQuests: req.activeQuests.map((q) => ({
         id: q.id,
         title: q.title,

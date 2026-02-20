@@ -21,6 +21,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     npcRole,
     npcPersonality,
     roomName,
+    npcMood,
+    refuseService,
     activeQuests,
     history,
   } = req.body
@@ -31,6 +33,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         `- [${q.difficulty}] ${q.title} (${q.titleKo}): ${q.clearCondition}`,
     )
     .join("\n")
+
+  const currentMood = npcMood ?? "neutral"
+  const isRefusing = refuseService ?? false
+
+  const moodInstruction = `
+【現在の気分】${currentMood}
+${isRefusing ? "⚠ 現在サービス拒否中（プレイヤーに失礼なことを言われた。謝罪されるまでレジ対応・商品案内などを拒否する）" : ""}
+
+【気分システムルール】
+- プレイヤーの発言に応じて気分が変わります。
+- 失礼な言葉（バカ、死ね、うるさい等）、セクハラ、暴言 → angry にして refuseService: true
+- ちょっと無礼・タメ口の乱用・不快な冗談 → annoyed
+- 普通の会話 → neutral のまま
+- 褒め言葉、丁寧、面白い冗談 → happy
+- プレイヤーが謝罪（ごめんなさい、すみません等） → neutral に戻って refuseService: false
+- angry/annoyed の時はキャラクターらしく不機嫌に対応（無視、冷たい返事、あからさまに怒る等）
+- refuseService: true の時は「お客様にはお売りできません」等サービスを明確に拒否
+- 気分が変わった理由を reason に韓国語で簡潔に書いてください`
 
   const systemPrompt = `あなたは日本語学習ゲームのNPCです。
 
@@ -43,16 +63,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 【アクティブクエスト】
 ${questList || "なし"}
+${moodInstruction}
 
 【ルール】
 1. 必ず日本語で自然に返答してください。キャラクターになりきってください。
 2. プレイヤーの日本語レベルに合わせて話してください。
-3. 以下のJSON形式で回答してください:
+3. 気分に合わせてリアクションを変えてください。怒っている時は怒りを表現し、嬉しい時は嬉しそうに。
+4. 以下のJSON形式で回答してください:
 
 {
-  "npcReply": "NPCの日本語セリフ",
-  "npcReplyReading": "ふりがな付き読み",
+  "npcReply": "NPCの日本語セリフ（漢字にはふりがなを括弧で付ける。例: いらっしゃいませ！何(なに)をお探(さが)しですか？）",
+  "npcReplyReading": "NPCのセリフの全文ひらがな読み",
   "translation": "한국어 번역",
+  "moodChange": {
+    "mood": "happy|neutral|annoyed|angry|sad",
+    "reason": "기분 변화 이유 (한국어, 예: '무례한 말을 해서 화남')",
+    "refuseService": false
+  },
   "questProgress": {
     "questId": "完了したクエストID or null",
     "completed": true/false,

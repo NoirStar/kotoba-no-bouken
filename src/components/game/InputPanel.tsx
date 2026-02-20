@@ -1,8 +1,9 @@
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import { Mic, MicOff, Send, Keyboard } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useDialogStore } from "@/stores/dialogStore"
 import { useGameStore } from "@/stores/gameStore"
+import { useMoodStore } from "@/stores/moodStore"
 import { useSpeech } from "@/hooks/useSpeech"
 import { eventBridge } from "@/game/EventBridge"
 import { sendToNPC, checkQuestCompletion } from "@/services/aiService"
@@ -30,6 +31,7 @@ export function InputPanel() {
   } = useDialogStore()
   const { settings, setInputMode } = useGameStore()
   const { completeQuest, progress } = useQuestStore()
+  const { getMood, setMood } = useMoodStore()
   const { startRecording, stopRecording, interimText, speakText, sttSupported } =
     useSpeech()
 
@@ -67,6 +69,9 @@ export function InputPanel() {
       setNpcThinking(true)
       eventBridge.emit("npc-speak", activeNpcId)
 
+      // 현재 NPC 기분 가져오기
+      const currentMoodState = getMood(activeNpcId)
+
       try {
         const response = await sendToNPC({
           playerMessage: text.trim(),
@@ -74,6 +79,8 @@ export function InputPanel() {
           roomName: conbiniRoom.name,
           activeQuests,
           conversationHistory: messages,
+          npcMood: currentMoodState.mood,
+          refuseService: currentMoodState.refuseService,
         })
 
         // NPC 메시지 추가
@@ -82,10 +89,32 @@ export function InputPanel() {
           speaker: activeNpcId,
           speakerName: npc.name,
           text: response.npcReply,
+          reading: response.npcReplyReading,
           translation: response.translation,
           timestamp: Date.now(),
         }
         addMessage(npcMsg)
+
+        // 게임 화면 자막 표시
+        eventBridge.emit("npc-subtitle", { name: npc.name, text: response.npcReply })
+
+        // NPC 기분 변화 처리
+        if (response.moodChange) {
+          const prevMood = currentMoodState.mood
+          const newMood = response.moodChange.mood
+          setMood(activeNpcId, newMood, response.moodChange.refuseService)
+
+          // 기분이 바뀌었으면 이벤트 발행 (시각적 피드백)
+          if (prevMood !== newMood) {
+            eventBridge.emit("npc-mood-change", {
+              npcId: activeNpcId,
+              npcName: npc.name,
+              mood: newMood,
+              reason: response.moodChange.reason,
+              refuseService: response.moodChange.refuseService,
+            })
+          }
+        }
 
         // TTS로 NPC 대사 읽기
         if (settings.ttsEnabled) {
@@ -106,7 +135,7 @@ export function InputPanel() {
           id: `msg-${Date.now()}-err`,
           speaker: activeNpcId,
           speakerName: "System",
-          text: "⚠️ 응답을 가져올 수 없습니다.",
+          text: "응답을 가져올 수 없습니다.",
           timestamp: Date.now(),
         })
       } finally {
@@ -124,6 +153,8 @@ export function InputPanel() {
       setLastFeedback,
       completeQuest,
       speakText,
+      getMood,
+      setMood,
     ],
   )
 
@@ -157,6 +188,17 @@ export function InputPanel() {
     handleSend,
   ])
 
+  // Space키에서 mic-toggle 이벤트 수신
+  useEffect(() => {
+    const onMicToggle = () => {
+      handleMicToggle()
+    }
+    eventBridge.on("mic-toggle", onMicToggle)
+    return () => {
+      eventBridge.off("mic-toggle", onMicToggle)
+    }
+  }, [handleMicToggle])
+
   /** 텍스트 입력 전송 */
   const handleTextSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -177,7 +219,7 @@ export function InputPanel() {
       {/* 입력 모드 전환 */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
-          {isVoiceMode ? "🎤 음성 모드" : "⌨️ 텍스트 모드"}
+          <span className="inline-flex items-center gap-1">{isVoiceMode ? <><Mic size={12} /> 음성 모드</> : <><Keyboard size={12} /> 텍스트 모드</>}</span>
         </span>
         <button
           onClick={() => setInputMode(isVoiceMode ? "text" : "voice")}

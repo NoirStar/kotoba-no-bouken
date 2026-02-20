@@ -1,5 +1,6 @@
 // ─── Room / Quest / NPC 타입 ─────────────────────────
-
+/** NPC 기분 상태 */
+export type NPCMood = "happy" | "neutral" | "annoyed" | "angry" | "sad"
 /** 퀘스트 난이도 */
 export type QuestDifficulty = "easy" | "normal" | "hard" | "hell"
 
@@ -64,6 +65,12 @@ export interface NPCResponse {
   npcReply: string
   npcReplyReading: string
   translation: string
+  /** NPC 기분 변화 */
+  moodChange: {
+    mood: NPCMood
+    reason: string       // 기분 변화 이유 (한국어)
+    refuseService: boolean  // true면 서비스 거부 (계산불가 등)
+  }
   questProgress: {
     questId: string | null
     completed: boolean
@@ -83,6 +90,8 @@ export interface DialogMessage {
   speaker: "player" | string  // "player" 또는 NPC id
   speakerName: string
   text: string
+  /** 후리가나 읽기 (예: 이랯샤이마세 → いらっしゃいませ) */
+  reading?: string
   translation?: string
   timestamp: number
 }

@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { useQuestStore } from "@/stores/questStore"
 import { conbiniRoom } from "@/data/rooms/conbini"
-import { Check, Lock, Star, Skull, ChevronRight } from "lucide-react"
+import { Check, Lock, Star, Skull, ChevronRight, Store, Lightbulb, BookOpen } from "lucide-react"
 import type { QuestDifficulty } from "@/types/room"
 
 const DIFFICULTY_CONFIG: Record<
@@ -9,25 +9,25 @@ const DIFFICULTY_CONFIG: Record<
   { label: string; icon: React.ReactNode; color: string; bg: string }
 > = {
   easy: {
-    label: "EASY ⭐",
+    label: "EASY",
     icon: <Star size={14} />,
     color: "text-pixel-green",
     bg: "bg-pixel-green/10 border-pixel-green/30",
   },
   normal: {
-    label: "NORMAL ⭐⭐",
+    label: "NORMAL",
     icon: <Star size={14} />,
     color: "text-pixel-blue",
     bg: "bg-pixel-blue/10 border-pixel-blue/30",
   },
   hard: {
-    label: "HARD ⭐⭐⭐",
+    label: "HARD",
     icon: <Star size={14} />,
     color: "text-pixel-yellow",
     bg: "bg-pixel-yellow/10 border-pixel-yellow/30",
   },
   hell: {
-    label: "HELL 💀",
+    label: "HELL",
     icon: <Skull size={14} />,
     color: "text-primary",
     bg: "bg-primary/10 border-primary/30",
@@ -54,7 +54,7 @@ export function QuestPanel() {
       {/* 헤더 */}
       <div className="px-4 py-3 border-b border-border">
         <div className="flex items-center justify-between">
-          <h2 className="font-pixel text-sm">🏪 コンビニ クエスト</h2>
+          <h2 className="font-pixel text-sm flex items-center gap-1.5"><Store size={14} className="text-primary" /> コンビニ クエスト</h2>
           <span className="text-xs text-muted-foreground">
             {completedCount}/{totalQuests}
           </span>
@@ -151,13 +151,13 @@ export function QuestPanel() {
                   <div className="mt-2 pl-6 space-y-1">
                     <p className="text-muted-foreground">{quest.description}</p>
                     {quest.hints.length > 0 && (
-                      <p className="text-pixel-yellow text-[10px]">
-                        💡 {quest.hints[0]}
+                      <p className="text-pixel-yellow text-[10px] flex items-center gap-1">
+                        <Lightbulb size={10} className="shrink-0" /> {quest.hints[0]}
                       </p>
                     )}
                     {quest.grammarPoint && (
-                      <p className="text-accent text-[10px]">
-                        📚 {quest.grammarPoint}
+                      <p className="text-accent text-[10px] flex items-center gap-1">
+                        <BookOpen size={10} className="shrink-0" /> {quest.grammarPoint}
                       </p>
                     )}
                   </div>

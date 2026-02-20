@@ -8,7 +8,7 @@ export const conbiniRoom: RoomDef = {
   id: "conbini",
   name: "コンビニ",
   nameKo: "편의점",
-  icon: "🏪",
+  icon: "store",
   description: "일본 편의점에서 쇼핑 체험! 점원과 대화하며 물건을 사보자.",
   tileMapKey: "conbini-map",
   bgColor: 0xfff8e7,
@@ -251,12 +251,12 @@ export const conbiniRoom: RoomDef = {
       ],
       order: 3,
     },
-    // 💀 HELL
+    // HELL
     {
       id: "conbini-hell-1",
       roomId: "conbini",
       title: "恥ずかしい買い物",
-      titleKo: "부끄러운 쇼핑 😅",
+      titleKo: "부끄러운 쇼핑",
       description:
         "편의점에서 콘돔을 사야 합니다... 점원에게 어떻게든 전달해보세요.",
       difficulty: "hell",
