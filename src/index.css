@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=DotGothic16&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: #1a1a2e;
+  --color-foreground: #eaf0f6;
+  --color-card: #16213e;
+  --color-card-foreground: #eaf0f6;
+  --color-primary: #e94560;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #0f3460;
+  --color-secondary-foreground: #eaf0f6;
+  --color-muted: #1a1a3e;
+  --color-muted-foreground: #8892b0;
+  --color-accent: #533483;
+  --color-accent-foreground: #ffffff;
+  --color-border: #2a2a5a;
+  --color-input: #2a2a5a;
+  --color-ring: #e94560;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
+  --color-game-bg: #0d1117;
+  --color-pixel-green: #4ade80;
+  --color-pixel-blue: #60a5fa;
+  --color-pixel-yellow: #fbbf24;
+  --color-pixel-pink: #f472b6;
+  --radius: 0.5rem;
+  --font-pixel: "DotGothic16", monospace;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: "Noto Sans KR", sans-serif;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* 픽셀 폰트 클래스 */
+.font-pixel {
+  font-family: var(--font-pixel);
+  image-rendering: pixelated;
+}
+
+/* 게임 캔버스 스타일 */
+.game-canvas canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* 스크롤바 커스텀 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+/* 대화창 애니메이션 */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.dialog-text {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typewriter 2s steps(40) forwards;
+}
+
+.dialog-cursor {
+  animation: blink-cursor 0.8s infinite;
+}
+
+/* 입력 패널 글로우 효과 */
+.input-glow {
+  box-shadow: 0 0 15px rgba(233, 69, 96, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+.input-glow:focus-within {
+  box-shadow: 0 0 25px rgba(233, 69, 96, 0.5);
+}
+
+/* 피드백 카드 */
+.feedback-correct {
+  border-left: 3px solid var(--color-success);
+  background: rgba(16, 185, 129, 0.1);
+}
+.feedback-incorrect {
+  border-left: 3px solid var(--color-destructive);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* 미션 체크 애니메이션 */
+@keyframes mission-complete {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.mission-complete {
+  animation: mission-complete 0.5s ease;
+}
